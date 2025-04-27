@@ -2,21 +2,21 @@
 #include <nRF24L01.h>
 #include <RF24.h>
 
-#define RF_CS 10
-#define RF_CE 9 
+// Setup nRF24L01
+RF24 radio(9, 10); // CE, CSN pins
+const byte address[6] = "00001"; // Same address as transmitter
 
-RF24 radio(RF_CE, RF_CS);
-const byte address[6] = "00001";
-
+// Secret key for XOR decryption (must match transmitter)
 const byte secretKey = 0x5A;
 
+// Define the structure (must match exactly with transmitter)
 struct SensorData {
-    unsigned long curTime;   // 4 bytes
-    float temp;              // 4 bytes
-    float humidity;          // 4 bytes
-    float correctedPPM;      // 4 bytes
-    float voltage;           // 4 bytes
-    float current;           // 4 bytes
+    unsigned long curTime;
+    float temp;
+    float humidity;
+    float correctedPPM;
+    float voltage;
+    float current;
 };
 
 SensorData data;    
@@ -24,6 +24,7 @@ SensorData data;
 void setup() {
     Serial.begin(9600);
 
+    // Initialize RF24
     radio.begin();
     radio.openReadingPipe(0, address);
     radio.setPALevel(RF24_PA_MIN);
@@ -34,11 +35,13 @@ void loop() {
     if (radio.available()) {
         radio.read(&data, sizeof(data));
 
+        // Decrypt the incoming data   
         byte* ptr = (byte*)&data;
         for (int i = 0; i < sizeof(data); i++) {
             ptr[i] ^= secretKey; // XOR decryption
         }
 
+        // Print the decrypted data 
         Serial.print(data.curTime);
         Serial.print(",");
         Serial.print(data.temp, 2);
