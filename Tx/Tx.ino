@@ -60,6 +60,9 @@ boolean serialPrint = true; // for debugging
 
 void setup() {
     Serial.begin(9600);
+
+    dht.begin();
+
     radio.begin();
     radio.openWritingPipe(address);
     radio.setPALevel(RF24_PA_MIN);
@@ -72,7 +75,7 @@ void loop() {
   if (curTime - prevTime >= writeInterval) {
     prevTime = curTime;
 
-    data.curTime = prevTime;
+    data.curTime = prevTime / 1000;
 
     // Reading temperature or humidity takes about 250 milliseconds
     t = dht.readTemperature();
@@ -92,6 +95,8 @@ void loop() {
     float resistance = mq135_sensor.getResistance();
     float ppm = mq135_sensor.getPPM();
     float correctedPPM = mq135_sensor.getCorrectedPPM(t, h);
+
+    data.correctedPPM = correctedPPM;
 
     vMax = 0; // Reset max voltage reading
 
