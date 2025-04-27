@@ -33,7 +33,7 @@ float calib = 1.15;
 
 // Current 
 const float sensitivity = 0.185; // 185mV/A for ACS712-5A module
-const float offset = 2.6;   // Offset voltage at 0A (approximately 2.5V)
+const float offset = 2.5;   // Offset voltage at 0A (approximately 2.5V)
 
 const unsigned long writeInterval = 3000; // Log every 3 second 
 
